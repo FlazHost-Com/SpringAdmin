@@ -1,6 +1,7 @@
 package com.nodeadmin;
 
 import com.nodeadmin.config.TestJwtConfig;
+import com.nodeadmin.config.TestProfileResolver;
 import com.nodeadmin.modules.access.permission.repository.PermissionRepository;
 import com.nodeadmin.modules.access.role.entity.RoleEntity;
 import com.nodeadmin.modules.access.role.repository.RoleRepository;
@@ -43,7 +44,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
  */
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
+@ActiveProfiles(resolver = TestProfileResolver.class)
 @Transactional
 @Import(TestJwtConfig.class)
 public abstract class BaseIntegrationTest {

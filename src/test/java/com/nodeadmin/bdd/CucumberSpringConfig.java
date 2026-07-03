@@ -1,6 +1,7 @@
 package com.nodeadmin.bdd;
 
 import com.nodeadmin.config.TestJwtConfig;
+import com.nodeadmin.config.TestProfileResolver;
 import io.cucumber.spring.CucumberContextConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,7 +20,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @CucumberContextConfiguration
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
+@ActiveProfiles(resolver = TestProfileResolver.class)
 @Import(TestJwtConfig.class)
 public class CucumberSpringConfig {
 

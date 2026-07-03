@@ -8,6 +8,9 @@
 --   * No ON UPDATE CURRENT_TIMESTAMP — handled in Java @PreUpdate
 --   * permissions.name is NON-UNIQUE (only INDEX)
 --   * join tables have composite PKs + FK ON DELETE CASCADE
+--   * No "CREATE INDEX IF NOT EXISTS" — MySQL does not support it; Flyway
+--     guarantees this migration runs exactly once on a fresh schema anyway
+--   * users.password_otp = VARCHAR(255) — stores a bcrypt hash (60 chars)
 -- Compatible with: MySQL 8+, PostgreSQL 14+, SQLite 3.x
 -- =============================================================================
 
@@ -26,8 +29,8 @@ CREATE TABLE IF NOT EXISTS roles (
     PRIMARY KEY (id)
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS roles__name   ON roles (name);
-CREATE        INDEX IF NOT EXISTS roles__status ON roles (status);
+CREATE UNIQUE INDEX roles__name   ON roles (name);
+CREATE        INDEX roles__status ON roles (status);
 
 -- ---------------------------------------------------------------------------
 -- permissions
@@ -47,10 +50,10 @@ CREATE TABLE IF NOT EXISTS permissions (
 );
 
 -- permissions.name is intentionally NON-UNIQUE (same action may exist per guard)
-CREATE INDEX IF NOT EXISTS permissions__name   ON permissions (name);
-CREATE INDEX IF NOT EXISTS permissions__method ON permissions (method);
-CREATE INDEX IF NOT EXISTS permissions__status ON permissions (status);
-CREATE INDEX IF NOT EXISTS permissions__guard  ON permissions (guard_name);
+CREATE INDEX permissions__name   ON permissions (name);
+CREATE INDEX permissions__method ON permissions (method);
+CREATE INDEX permissions__status ON permissions (status);
+CREATE INDEX permissions__guard  ON permissions (guard_name);
 
 -- ---------------------------------------------------------------------------
 -- users
@@ -63,7 +66,7 @@ CREATE TABLE IF NOT EXISTS users (
     email                VARCHAR(255) NOT NULL,
     email_verified_at    TIMESTAMP    NULL,
     password             VARCHAR(255) NOT NULL,
-    password_otp         VARCHAR(50)  NULL,
+    password_otp         VARCHAR(255) NULL,
     password_otp_expires BIGINT       NULL,
     status               VARCHAR(20)  NOT NULL DEFAULT 'Active',
     picture              VARCHAR(255) NULL,
@@ -77,13 +80,13 @@ CREATE TABLE IF NOT EXISTS users (
     PRIMARY KEY (id)
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS users__code     ON users (code);
-CREATE UNIQUE INDEX IF NOT EXISTS users__email    ON users (email);
-CREATE        INDEX IF NOT EXISTS users__name     ON users (name);
-CREATE        INDEX IF NOT EXISTS users__phone    ON users (phone);
-CREATE        INDEX IF NOT EXISTS users__status   ON users (status);
-CREATE        INDEX IF NOT EXISTS users__timezone ON users (timezone);
-CREATE        INDEX IF NOT EXISTS users__blocked  ON users (blocked);
+CREATE UNIQUE INDEX users__code     ON users (code);
+CREATE UNIQUE INDEX users__email    ON users (email);
+CREATE        INDEX users__name     ON users (name);
+CREATE        INDEX users__phone    ON users (phone);
+CREATE        INDEX users__status   ON users (status);
+CREATE        INDEX users__timezone ON users (timezone);
+CREATE        INDEX users__blocked  ON users (blocked);
 
 -- ---------------------------------------------------------------------------
 -- settings
@@ -109,14 +112,14 @@ CREATE TABLE IF NOT EXISTS settings (
     PRIMARY KEY (id)
 );
 
-CREATE INDEX IF NOT EXISTS settings__initial       ON settings (initial);
-CREATE INDEX IF NOT EXISTS settings__name          ON settings (name);
-CREATE INDEX IF NOT EXISTS settings__icon          ON settings (icon);
-CREATE INDEX IF NOT EXISTS settings__logo          ON settings (logo);
-CREATE INDEX IF NOT EXISTS settings__login_image   ON settings (login_image);
-CREATE INDEX IF NOT EXISTS settings__phone         ON settings (phone);
-CREATE INDEX IF NOT EXISTS settings__setting_email ON settings (email);
-CREATE INDEX IF NOT EXISTS settings__copyright     ON settings (copyright);
+CREATE INDEX settings__initial       ON settings (initial);
+CREATE INDEX settings__name          ON settings (name);
+CREATE INDEX settings__icon          ON settings (icon);
+CREATE INDEX settings__logo          ON settings (logo);
+CREATE INDEX settings__login_image   ON settings (login_image);
+CREATE INDEX settings__phone         ON settings (phone);
+CREATE INDEX settings__setting_email ON settings (email);
+CREATE INDEX settings__copyright     ON settings (copyright);
 
 -- ---------------------------------------------------------------------------
 -- roles_permissions  (join table — composite PK + FK ON DELETE CASCADE)

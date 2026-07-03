@@ -2,6 +2,7 @@ package com.nodeadmin.modules.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nodeadmin.config.TestJwtConfig;
+import com.nodeadmin.config.TestProfileResolver;
 import com.nodeadmin.modules.access.user.repository.UserRepository;
 import com.nodeadmin.modules.auth.service.IAuthService;
 import com.nodeadmin.modules.auth.service.IJwtService;
@@ -44,7 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("test")
+@ActiveProfiles(resolver = TestProfileResolver.class)
 @Transactional
 @Import(TestJwtConfig.class)
 class AuthApiTest {
