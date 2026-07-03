@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -20,6 +21,8 @@ import java.util.concurrent.TimeUnit;
  *
  * <p>Token shape (claims):
  * <ul>
+ *   <li>{@code jti}       — unique token ID (UUID) — guarantees uniqueness even
+ *                           for same-second logins with identical claims</li>
  *   <li>{@code sub}       — user ID (UUID string)</li>
  *   <li>{@code email}     — user email</li>
  *   <li>{@code guardName} — {@code "web"} or {@code "api"}</li>
@@ -58,6 +61,11 @@ public class JwtService implements IJwtService {
         long expMs  = nowMs + appProperties.getJwt().getExpirationSeconds() * 1_000L;
 
         return Jwts.builder()
+                // jti unik per token — tanpa ini, dua login dengan klaim sama pada
+                // detik yang sama (iat/exp resolusi detik) menghasilkan token
+                // byte-identik, sehingga blacklist logout token lama ikut
+                // mematikan token baru.
+                .id(UUID.randomUUID().toString())
                 .subject(userId)
                 .claim(CLAIM_EMAIL, email)
                 .claim(CLAIM_GUARD_NAME, guardName)

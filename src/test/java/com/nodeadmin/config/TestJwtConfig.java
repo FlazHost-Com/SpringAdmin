@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Profile;
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -57,6 +58,9 @@ public class TestJwtConfig {
             long nowMs = System.currentTimeMillis();
             long expMs = nowMs + appProperties.getJwt().getExpirationSeconds() * 1_000L;
             return Jwts.builder()
+                    // jti unik — mencegah token byte-identik saat dua login terjadi
+                    // pada detik yang sama (mirror perbaikan di JwtService produksi).
+                    .id(UUID.randomUUID().toString())
                     .subject(userId)
                     .claim(CLAIM_EMAIL, email)
                     .claim(CLAIM_GUARD_NAME, guardName)

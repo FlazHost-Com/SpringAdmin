@@ -132,6 +132,8 @@ class SettingWebControllerTest extends BaseIntegrationTest {
         String html = getResult.getResponse().getContentAsString();
         assertThat(html)
                 .as("Flash success should be in HTML")
-                .contains("Settings saved successfully.");
+                // Pesan flash kanonik mengikuti NodeAdmin (referensi fleet):
+                // 'Save Setting Success.' — lihat NodeAdmin SettingController.ts
+                .contains("Save Setting Success.");
     }
 }
